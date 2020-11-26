@@ -547,8 +547,8 @@ public class Trimmer {
 
       float aspectRatio = (float)width / (float)height;
 
-      int resizeHeight = 100;
-      int resizeWidth = Math.round(resizeHeight * aspectRatio);
+      int resizeHeight = height;
+      int resizeWidth = width;
 
       float scaleWidth = ((float) resizeWidth) / width;
       float scaleHeight = ((float) resizeHeight) / height;
@@ -559,11 +559,12 @@ public class Trimmer {
               "\n\torientation: " + orientation +
               "\n\taspectRatio: " + aspectRatio +
               "\n\tresizeWidth: " + resizeWidth +
-              "\n\tresizeHeight: " + resizeHeight
+              "\n\tresizeHeight: " + resizeHeight +
+              "\n\tscaleWidth: " + scaleWidth +
+              "\n\tscaleHeight: " + scaleHeight
       );
 
       Matrix mx = new Matrix();
-
       mx.postScale(scaleWidth, scaleHeight);
       mx.postRotate(orientation - 360);
 
@@ -573,8 +574,9 @@ public class Trimmer {
         if (frame == null) {
           continue;
         }
+        Bitmap normalizedFrame = Bitmap.createBitmap(frame, 0, 0, resizeWidth, resizeHeight, mx, true);
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        frame.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+        normalizedFrame.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
         byte[] byteArray = byteArrayOutputStream.toByteArray();
         String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
         images.pushString(encoded);
